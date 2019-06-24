@@ -64,14 +64,18 @@ class TradeMe extends Base
 
     /**
      * @param $model
-     * @param $transformer
-     * @param mixed ...$parms
+     * @param Transformer $transformer
+     * @param \Closure $filter
+     * @param \Closure $callback
      * @return mixed
      * @throws \Exception
      */
-   public function createListingByModel($model, $transformer,...$parms){
-       $model_transformer = new $transformer($model, ...$parms);
-       return $this->createListing($model_transformer->transform());
+   public function createListingByModel($model, Transformer $transformer,$callback=null){
+       $response = $this->createListing($transformer->transform($model));
+       if ($callback instanceof \Closure){
+           $callback($model, $response);
+       }
+       return $response;
    }
 
    private function convertResponse(Response $response){
