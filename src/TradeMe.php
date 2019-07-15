@@ -13,6 +13,22 @@ class TradeMe extends Base
         return $this->convertResponse($response);
    }
 
+    /**
+     * Retrieves detailed information about a single category
+     * https://developer.trademe.co.nz/api-reference/catalogue-methods/retrieve-detailed-information-about-a-single-category/
+     * @param $categoryId
+     * @return mixed
+     * @throws \Exception
+     */
+   public function retrieveSingleCategoryInfo($categoryId){
+       $ids = explode('-', $categoryId);
+       $ids = array_filter($ids);
+       $id = end($ids);
+       $url = "Categories/$id/Details.json";
+       $response = $this->setMethod('GET')->setHeaders([])->send($url);
+       return $this->convertResponse($response);
+   }
+
    //to do
    public function _searchPhoto($photo_steam)
    {
@@ -65,17 +81,63 @@ class TradeMe extends Base
     /**
      * @param $model
      * @param Transformer $transformer
-     * @param \Closure $filter
      * @param \Closure $callback
      * @return mixed
      * @throws \Exception
      */
-   public function createListingByModel($model, Transformer $transformer,$callback=null){
+   public function createListingByModel($model, Transformer $transformer, $callback=null){
        $response = $this->createListing($transformer->transform($model));
        if ($callback instanceof \Closure){
            $callback($model, $response);
        }
        return $response;
+   }
+
+    /**
+     * Retrieve listing detail by listing id from trademe
+     * https://developer.trademe.co.nz/api-reference/selling-methods/retrieve-the-details-of-a-single-listing/
+     * @param $listingId string
+     * @return mixed
+     * @throws \Exception
+     */
+   public function retrieveListing($listingId){
+       $url = "Selling/Listings/$listingId.json";
+       $response = $this->setMethod('GET')->setHeaders([], true)->send($url);
+       return $this->convertResponse($response);
+   }
+
+    /**
+     * update listing
+     * @param $product_data array must have ListingId
+     * @return mixed
+     * @throws \Exception
+     */
+   public function editListing($product_data){
+       $url = "Selling/Edit.json";
+       if (!isset($product_data['ListingId'])){
+           throw new \Exception('The ID of the listing missing', 404);
+       }else{
+           $response = $this->setMethod('POST')->setHeaders([], true)
+               ->setJson($product_data)->send($url);
+           return $this->convertResponse($response);
+       }
+   }
+
+    /**
+     * Relist an item that has expired.
+     * https://developer.trademe.co.nz/api-reference/selling-methods/relist-an-item/
+     * @param $listingId string Trademe Listing ID
+     * @return mixed
+     * @throws \Exception
+     */
+   public function relistItem($listingId){
+       $url = 'Selling/Relist.json';
+       $response = $this->setMethod('POST')->setJson([
+           'ListingId'=>$listingId,
+           'ReturnListingDetails'=>false
+       ])
+           ->send($url);
+       return $this->convertResponse($response);
    }
 
    private function convertResponse(Response $response){

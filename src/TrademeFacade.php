@@ -15,6 +15,6 @@ class TrademeFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return TradeMe::class;
+        return new TradeMe();
     }
 }
