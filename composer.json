@@ -1,0 +1,31 @@
+{
+    "name": "hugostech/trademe-laravel",
+    "description": "Trademe APi implement for Laravel",
+    "type": "library",
+    "require": {
+        "php": ">=7.0.0",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hugo W",
+            "email": "hugowangchn@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hugostech\\Trademe\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Hugostech\\Trademe\\TrademeServiceProvider"
+            ],
+            "aliases": {
+                "Trademe": "Hugostech\\Trademe\\TrademeFacade"
+            }
+        }
+    }
+}
