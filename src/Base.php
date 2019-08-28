@@ -28,7 +28,7 @@ class Base
         $this->client = new Client([
             // You can set any number of default request options.
             'base_uri' => config('trademe.tm_'.config('trademe.mode').'_url'),
-            'timeout'  => config('trademe.tm_require_time_out', 2),
+            'timeout'  => config('trademe.tm_require_time_out', 5),
         ]);
         $this->method = 'GET';
         $this->setHeaders([]);
