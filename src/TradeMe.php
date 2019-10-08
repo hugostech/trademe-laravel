@@ -132,10 +132,11 @@ class TradeMe extends Base
      */
    public function relistItem($listingId){
        $url = 'Selling/Relist.json';
-       $response = $this->setMethod('POST')->setJson([
+       $response = $this->setMethod('POST')->setHeaders([], true)
+           ->setJson([
            'ListingId'=>$listingId,
            'ReturnListingDetails'=>false
-       ])
+            ])
            ->send($url);
        return $this->convertResponse($response);
    }
