@@ -108,6 +108,7 @@ class TradeMe extends Base
 
     /**
      * update listing
+     * https://developer.trademe.co.nz/api-reference/selling-methods/edit-an-item/
      * @param $product_data array must have ListingId
      * @return mixed
      * @throws \Exception
@@ -141,12 +142,49 @@ class TradeMe extends Base
        return $this->convertResponse($response);
    }
 
-   private function convertResponse(Response $response){
-       if ($response->getStatusCode()==200){
-           return json_decode($response->getBody()->getContents(), true);
+    /**
+     * Validate a listing request
+     * https://developer.trademe.co.nz/api-reference/selling-methods/validate-a-listing-request/
+     * @param $product_data
+     * @return mixed
+     * @throws \Exception
+     */
+   public function validateListingData($product_data){
+       $url = 'https://api.trademe.co.nz/v1/Selling/Validate.json';
+       $response = $this->setMethod('POST')
+           ->setHeaders([], true)
+           ->setJson($product_data)
+           ->send($url);
+       return $this->convertResponse($response);
+   }
+
+    /**
+     * edit and relist item
+     * https://developer.trademe.co.nz/api-reference/selling-methods/relist-an-item-with-edits/
+     * @param $product_data
+     */
+   public function editAndRelistItem($product_data){
+       $url = "https://api.trademe.co.nz/v1/Selling/RelistWithEdits.json";
+       if (!isset($product_data['ListingId'])){
+           throw new \Exception('The ID of the listing missing', 404);
        }else{
-           throw new \Exception($this->getTradmeErrorMessage($response->getStatusCode()),$response->getStatusCode());
+           $response = $this->setMethod('POST')->setHeaders([], true)
+               ->setJson($product_data)->send($url);
+           return $this->convertResponse($response);
        }
+   }
+
+   private function convertResponse($response){
+       if (gettype($response) == 'array'){
+           throw new \Exception($response['ErrorDescription'],400);
+       }else{
+           if ($response->getStatusCode()==200){
+               return json_decode($response->getBody()->getContents(), true);
+           }else{
+               throw new \Exception($this->getTradmeErrorMessage($response->getStatusCode()),$response->getStatusCode());
+           }
+       }
+
    }
 
    private function getTradmeErrorMessage($statusCode){

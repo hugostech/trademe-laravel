@@ -5,6 +5,7 @@ namespace Hugostech\Trademe;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 
 //Error Handling
@@ -37,11 +38,17 @@ class Base
     }
 
     public function send($url){
-        return $this->client->request($this->getMethod(), $url, [
-            'headers'=>$this->getHeaders(),
-            'query'=>$this->getQuery(),
-            'json'=>$this->getJson(),
-        ]);
+        try{
+            return $this->client->request($this->getMethod(), $url, [
+                'headers'=>$this->getHeaders(),
+                'query'=>$this->getQuery(),
+                'json'=>$this->getJson(),
+            ]);
+        }catch (ClientException $e){
+            $content = $e->getResponse()->getBody()->getContents();
+            return \GuzzleHttp\json_decode($content, true);
+        }
+
     }
 
     public function makeRequest($url){

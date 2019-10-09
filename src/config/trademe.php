@@ -8,5 +8,5 @@ return [
     'oauth_token_secret'=>env('TM_OAUTH_TOKEN_SECRET'),
     'tm_sandbox_url'=>'https://api.tmsandbox.co.nz/v1/',
     'tm_production_url'=>'https://api.trademe.co.nz/v1/',
-    'tm_require_time_out'=>2
+    'tm_require_time_out'=>5
 ];
